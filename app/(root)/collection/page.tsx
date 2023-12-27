@@ -10,7 +10,6 @@ export default async function Home() {
   const { userId } = auth();
   if (!userId) return null;
   const result = await getSavedQuestions({ clerkId: userId });
-  console.log(result.questions);
 
   return (
     <>
