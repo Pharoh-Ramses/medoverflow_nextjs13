@@ -5,6 +5,7 @@ import {
   downvoteQuestion,
   upvoteQuestion,
 } from "@/lib/actions/question.action";
+import { toggleSaveQuestion } from "@/lib/actions/user.action";
 import { formatAndDivideNumber } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,7 +35,13 @@ const Votes = ({
   const pathname = usePathname();
   // eslint-disable-next-line no-unused-vars
   const router = useRouter();
-  const handleSave = () => {};
+  const handleSave = async () => {
+    toggleSaveQuestion({
+      userId: JSON.parse(userId),
+      questionId: JSON.parse(itemId),
+      path: pathname,
+    });
+  };
   const handleVote = async (action: string) => {
     console.log("handleVote function launched");
     if (!userId) {
@@ -139,7 +146,7 @@ const Votes = ({
           height={18}
           alt="star"
           className="cursor-pointer"
-          onClick={() => handleSave()}
+          onClick={handleSave}
         />
       )}
     </div>
