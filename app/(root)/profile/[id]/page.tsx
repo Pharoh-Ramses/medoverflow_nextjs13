@@ -7,6 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { getMonthYear } from "@/lib/utils";
+import ProfileLink from "@/components/shared/ProfileLink";
+import Stats from "@/components/shared/Stats";
+import QuestionsTab from "@/components/shared/QuestionsTab";
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
@@ -23,15 +27,40 @@ const Page = async ({ params, searchParams }: URLProps) => {
             className="rounded-full object-cover"
           />
           <div className="mt-3">
-            <h2>{userInfo.user.name}</h2>
-            <p className="">@{userInfo.user.username}</p>
+            <h2 className="h2-bold text-dark100_light900">
+              {userInfo.user.name}
+            </h2>
+            <p className="paragraph-regular text-dark200_light800">
+              @{userInfo.user.username}
+            </p>
             <div className="mt-5 flex flex-wrap items-center justify-start gap-5">
-              {userInfo.user.location && <>location</>}
-              {userInfo.user.joinedAt.toString()}
+              {userInfo.user.portfolioWebsite && (
+                <ProfileLink
+                  imgUrl="/assets/icons/link.svg"
+                  href={userInfo.user.portfolioWebsite}
+                  title="Portfolio"
+                />
+              )}
+              {userInfo.user.location && (
+                <ProfileLink
+                  imgUrl="/assets/icons/location.svg"
+                  title={userInfo.user.location}
+                />
+              )}
+              <ProfileLink
+                imgUrl="/assets/icons/calendar.svg"
+                title={getMonthYear(userInfo.user.joinedAt)}
+              />
             </div>
-            {userInfo.user.bio && <p>{userInfo.user.bio}</p>}
+
+            {userInfo.user.bio && (
+              <p className="paragraph-regular text-dark400_light800 mt-8">
+                {userInfo.user.bio}
+              </p>
+            )}
           </div>
         </div>
+
         <div className="flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3">
           <SignedIn>
             {clerkId === userInfo.user.clerkId && (
@@ -44,7 +73,12 @@ const Page = async ({ params, searchParams }: URLProps) => {
           </SignedIn>
         </div>
       </div>
-      Stats
+
+      <Stats
+        totalQuestions={userInfo.totalQuestions}
+        totalAnswers={userInfo.totalAnswers}
+      />
+
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">
           <TabsList className="background-light800_dark400 min-h-[42px] p-1">
@@ -55,10 +89,10 @@ const Page = async ({ params, searchParams }: URLProps) => {
               Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="account">
-            Make changes to your account here.
+          <TabsContent value="top-posts">
+            <QuestionsTab />
           </TabsContent>
-          <TabsContent value="password">Change your password here.</TabsContent>
+          <TabsContent value="answers">AnswersTab</TabsContent>
         </Tabs>
       </div>
     </>

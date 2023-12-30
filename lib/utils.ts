@@ -50,3 +50,7 @@ export const formatAndDivideNumber = (inputNumber: number): string => {
     return inputNumber.toString();
   }
 };
+
+export function getMonthYear(date: Date): string {
+  return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+}
