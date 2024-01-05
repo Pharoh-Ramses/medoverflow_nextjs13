@@ -10,11 +10,13 @@ import React from "react";
 import { getMonthYear } from "@/lib/utils";
 import ProfileLink from "@/components/shared/ProfileLink";
 import Stats from "@/components/shared/Stats";
-import QuestionsTab from "@/components/shared/QuestionsTab";
+import QuestionTab from "@/components/shared/QuestionTab";
+import AnswerTab from "@/components/shared/AnswerTab";
 
 const Page = async ({ params, searchParams }: URLProps) => {
   const { userId: clerkId } = auth();
   const userInfo = await getUserInfo({ userId: params.id });
+
   return (
     <>
       <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -82,17 +84,27 @@ const Page = async ({ params, searchParams }: URLProps) => {
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">
           <TabsList className="background-light800_dark400 min-h-[42px] p-1">
-            <TabsTrigger className="tab" value="top-posts">
+            <TabsTrigger value="top-posts" className="tab">
               Top Posts
             </TabsTrigger>
-            <TabsTrigger className="tab " value="answers">
+            <TabsTrigger value="answers" className="tab">
               Answers
             </TabsTrigger>
           </TabsList>
           <TabsContent value="top-posts">
-            <QuestionsTab />
+            <QuestionTab
+              searchParams={searchParams}
+              userId={userInfo.user._id}
+              clerkId={clerkId}
+            />
           </TabsContent>
-          <TabsContent value="answers">AnswersTab</TabsContent>
+          <TabsContent value="answers" className="flex w-full flex-col gap-6">
+            <AnswerTab
+              searchParams={searchParams}
+              userId={userInfo.user._id}
+              clerkId={clerkId}
+            />
+          </TabsContent>
         </Tabs>
       </div>
     </>
