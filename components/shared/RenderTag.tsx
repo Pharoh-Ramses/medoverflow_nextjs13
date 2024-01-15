@@ -5,10 +5,10 @@ import { Badge } from "../ui/badge";
 interface Props {
   _id: string;
   name: string;
-  count?: number;
+  totalQuestions?: number;
   showCount?: boolean;
 }
-const RenderTag = ({ _id, name, count, showCount }: Props) => {
+const RenderTag = ({ _id, name, totalQuestions, showCount }: Props) => {
   return (
     <div>
       <Link href={`/tags/${_id}`} className="flex justify-between gap-2">
@@ -16,7 +16,7 @@ const RenderTag = ({ _id, name, count, showCount }: Props) => {
           {name}
         </Badge>
         {showCount && (
-          <p className="small-medium text-dark500_light700">{count}</p>
+          <p className="small-medium text-dark500_light700">{totalQuestions}</p>
         )}
       </Link>
     </div>

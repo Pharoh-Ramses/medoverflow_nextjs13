@@ -2,25 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import RenderTag from "./RenderTag";
-const hotQuestions = [
-  { _id: "1", title: "What is the best way to maintain a healthy weight?" },
-  { _id: "2", title: "How can I lower my cholesterol?" },
-  { _id: "3", title: "What are the symptoms of diabetes?" },
-  {
-    _id: "4",
-    title: "How often should I get a check-up?",
-  },
-  { _id: "5", title: "What are some ways to manage stress?" },
-];
+import { getHotQuestions } from "@/lib/actions/question.action";
+import { getPopularTags } from "@/lib/actions/tag.actions";
 
-const popularTags = [
-  { _id: "1", name: "Heart", count: 100 },
-  { _id: "2", name: "Covid", count: 100 },
-  { _id: "3", name: "Breathing", count: 100 },
-  { _id: "4", name: "Anxiety", count: 100 },
-  { _id: "5", name: "Depression", count: 100 },
-];
-const RightSidebar = () => {
+const RightSidebar = async () => {
+  const hotQuestions = await getHotQuestions();
+  const popularTags = await getPopularTags();
+
   return (
     <section className="background-light900_dark200 light-border custom-scrollbar sticky right-0 top-0 flex h-screen w-[350px] flex-col overflow-y-auto border-l p-6 pt-36 shadow-light-300 dark:shadow-none max-xl:hidden">
       <div>
@@ -54,7 +42,7 @@ const RightSidebar = () => {
               key={tag._id}
               _id={tag._id}
               name={tag.name}
-              count={tag.count}
+              totalQuestions={tag.numberOfQuestions}
               showCount
             />
           ))}
