@@ -15,11 +15,22 @@ import User from "@/database/user.model";
 import { revalidatePath } from "next/cache";
 import Answer from "@/database/answer.model";
 import Interaction from "@/database/interaction.model";
+import { FilterQuery } from "mongoose";
 
 export async function getQuestions(params: GetQuestionsParams) {
   try {
     connectToDatabase();
-    const questions = await Question.find({})
+    const { searchQuery } = params;
+    const query: FilterQuery<typeof Question> = {};
+
+    if (searchQuery) {
+      query.$or = [
+        { title: { $regex: new RegExp(searchQuery, "i") } },
+        { content: { $regex: new RegExp(searchQuery, "i") } },
+      ];
+    }
+
+    const questions = await Question.find(query)
       // get questions with tags and author populated
       .populate({ path: "tags", model: Tag })
       .populate({ path: "author", model: User })
@@ -149,48 +160,51 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 }
 
 export async function deleteQuestion(params: DeleteQuestionParams) {
-  try{
+  try {
     connectToDatabase();
     const { questionId, path } = params;
     await Question.deleteOne({ _id: questionId });
     await Answer.deleteMany({ question: questionId });
     await Interaction.deleteMany({ question: questionId });
-    await Tag.updateMany({ questions: questionId }, { $pull: { questions: questionId } });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
     revalidatePath(path);
-  }catch(error){
+  } catch (error) {
     console.log("=> error deleting question:", error);
     throw error;
   }
 }
 
 export async function editQuestion(params: EditQuestionParams) {
-  try{
+  try {
     connectToDatabase();
     const { questionId, title, content, path } = params;
 
     const question = await Question.findById(questionId).populate("tags");
 
-    if(!question){
+    if (!question) {
       throw new Error("Question not found");
     }
     question.title = title;
     question.content = content;
     await question.save();
     revalidatePath(path);
-  }catch(error){
+  } catch (error) {
     console.log("=> error editing question:", error);
     throw error;
   }
 }
 
 export async function getHotQuestions() {
-  try{
+  try {
     connectToDatabase();
     const hotQuestions = await Question.find({})
-    .sort({ views:-1,upvotes: -1 })
-    .limit(5)
+      .sort({ views: -1, upvotes: -1 })
+      .limit(5);
     return hotQuestions;
-  }catch(error){
+  } catch (error) {
     console.log("=> error getting hot questions", error);
     throw error;
   }
