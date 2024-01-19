@@ -86,8 +86,20 @@ export async function deleteUser(params: DeleteUserParams) {
 export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectToDatabase();
-    // const { page = 1, pageSize = 20, filter, searchQuery } = params;
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const { searchQuery } = params;
+
+    const query: FilterQuery<typeof User> = {};
+    if (searchQuery) {
+      query.$or = [
+        {
+          name: { $regex: new RegExp(searchQuery, "i") },
+        },
+        {
+          username: { $regex: new RegExp(searchQuery, "i") },
+        },
+      ];
+    }
+    const users = await User.find(query).sort({ createdAt: -1 });
     return { users };
   } catch (error) {
     console.log("=> error connecting to database for get all users", error);
@@ -143,10 +155,14 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
   try {
     connectToDatabase();
     // eslint-disable-next-line no-unused-vars
-    const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
-    const query: FilterQuery<typeof Question> = searchQuery
-      ? { title: { $regex: new RegExp(searchQuery, "i") } }
-      : {};
+    const { clerkId, searchQuery } = params;
+
+    const query: FilterQuery<typeof Question> = {};
+
+    if (searchQuery) {
+      query.$or = [{ title: new RegExp(searchQuery, "i") }];
+    }
+
     const user = await User.findOne({ clerkId }).populate({
       path: "saved",
       match: query,
@@ -194,44 +210,50 @@ export async function getUserInfo(params: GetUserByIdParams) {
   }
 }
 
-export async function getUserQuestions (params:GetUserStatsParams) {
+export async function getUserQuestions(params: GetUserStatsParams) {
   try {
     connectToDatabase();
 
     // eslint-disable-next-line no-unused-vars
-    const{userId, page = 1, pageSize = 10} = params;
+    const { userId, page = 1, pageSize = 10 } = params;
 
-    const totalQuestions = await Question.countDocuments({author: userId});
+    const totalQuestions = await Question.countDocuments({ author: userId });
 
-    const userQuestions = await Question.find({author: userId})
-    .sort({views: -1, upvotes: -1})
-    .populate('tags', '_id name')
-    .populate('author', '_id clerkId name picture')
+    const userQuestions = await Question.find({ author: userId })
+      .sort({ views: -1, upvotes: -1 })
+      .populate("tags", "_id name")
+      .populate("author", "_id clerkId name picture");
 
-    return {questions:userQuestions, totalQuestions}
+    return { questions: userQuestions, totalQuestions };
   } catch (error) {
-    console.log("=> error connecting to database for get user questions", error);
+    console.log(
+      "=> error connecting to database for get user questions",
+      error
+    );
     throw error;
   }
 }
 
-export async function getUserAnswers (params:GetUserStatsParams) {
+export async function getUserAnswers(params: GetUserStatsParams) {
   try {
     connectToDatabase();
 
     // eslint-disable-next-line no-unused-vars
-    const{userId, page = 1, pageSize = 10} = params;
+    const { userId, page = 1, pageSize = 10 } = params;
 
-    const totalAnswers = await Answer.countDocuments({author: userId});
+    const totalAnswers = await Answer.countDocuments({ author: userId });
 
-    const userAnswers = await Answer.find({author: userId})
-    .sort({ upvotes: -1})
-    .populate('question', '_id title')
-    .populate('author', '_id clerkId name picture')
+    const userAnswers = await Answer.find({ author: userId })
+      .sort({ upvotes: -1 })
+      .populate("question", "_id title")
+      .populate("author", "_id clerkId name picture");
 
-    return {Answers:userAnswers, totalAnswers}
+    return { Answers: userAnswers, totalAnswers };
   } catch (error) {
-    console.log("=> error connecting to database for get user questions", error);
+    console.log(
+      "=> error connecting to database for get user questions",
+      error
+    );
     throw error;
   }
 }

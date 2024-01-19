@@ -38,13 +38,19 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
   try {
     connectToDatabase();
-    // eslint-disable-next-line no-unused-vars
-    const { page = 0, pageSize = 10, filter, searchQuery } = params;
-    const tags = await Tag.find({})
-      .skip(page * pageSize)
-      .limit(pageSize)
-      .sort({ createdAt: -1 })
-      .exec();
+    const { searchQuery } = params;
+
+    const query: FilterQuery<typeof Tag> = {};
+
+    if (searchQuery) {
+      query.$or = [
+        {
+          name: { $regex: new RegExp(searchQuery, "i") },
+        },
+      ];
+    }
+
+    const tags = await Tag.find(query);
     return { tags };
   } catch (error) {
     console.log("=> error connecting to database for get all tags", error);
@@ -89,12 +95,11 @@ export async function getPopularTags() {
   try {
     connectToDatabase();
     const popularTags = await Tag.aggregate([
-      {$project: {name:1, numberOfQuestions: {$size: "$questions"}}},
-      {$sort: {numberOfQuestions: -1}},
-      {$limit: 5}
-    ])
-      return  popularTags ;
-    
+      { $project: { name: 1, numberOfQuestions: { $size: "$questions" } } },
+      { $sort: { numberOfQuestions: -1 } },
+      { $limit: 5 },
+    ]);
+    return popularTags;
   } catch (error) {
     console.log("=> error getting popular tags", error);
     throw error;
