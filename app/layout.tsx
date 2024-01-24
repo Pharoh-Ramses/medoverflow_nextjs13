@@ -4,6 +4,7 @@ import React from "react";
 import { Inter, Space_Grotesk } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
+import "../styles/prism.css";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
 const inter = Inter({
@@ -18,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Medflow",
+  title: "Rumeflow",
   description: "Medflow is a medical records management system",
   icons: {
     icon: "/assets/images/site-icon.svg",
