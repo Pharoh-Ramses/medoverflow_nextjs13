@@ -33,7 +33,7 @@ const AllAnswers = async ({
   return (
     <div className="mt-11">
       <div className="flex items-center justify-between ">
-        <h3 className="primary-text-gradient">{totalAnswers}Answers</h3>
+        <h3 className="primary-text-gradient">{totalAnswers} Answers</h3>
         <Filter filters={AnswerFilters} />
       </div>
       <div>

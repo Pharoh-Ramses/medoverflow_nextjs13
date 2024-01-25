@@ -98,10 +98,19 @@ export async function createQuestion(params: CreateQuestionParams) {
     });
 
     // Create an interaction record for the user's ask_question action
-
+    await Interaction.create({
+      action: "ask_question",
+      question: question._id,
+      user: author,
+      tags: tagDocuments,
+    });
     // Increment author's reputation by 5 per question asked
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
     revalidatePath(path);
-  } catch (error) {}
+  } catch (error) {
+    console.log("=> error creating question in database:", error);
+    throw error;
+  }
 }
 
 export async function getQuestionById(params: GetQuestionByIdParams) {
@@ -145,7 +154,15 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
     if (!question) {
       throw new Error("Question not found");
     }
-    // Increment author's reputation by 5 per question upvoted
+    // Increment author's reputation by +1/-1 for upvoting/revoking an upvote to the question
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: userId !== question.author && hasupVoted ? -1 : 1 },
+    });
+    // Increment author's reputation by +10/-10 for receiving an upvote/downvote to their question
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: userId !== question.author && hasupVoted ? -10 : 10 },
+    });
+
     revalidatePath(path);
   } catch (error) {
     console.log("=> error upvoting question:", error);
@@ -175,7 +192,14 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     if (!question) {
       throw new Error("Question not found");
     }
-    // Increment author's reputation by 5 per question downvoted
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -1 : 1 },
+    });
+    // Increment author's reputation by +10/-10 for receiving an upvote/downvote to their question
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
+    });
     revalidatePath(path);
   } catch (error) {
     console.log("=> error downvoting question:", error);
