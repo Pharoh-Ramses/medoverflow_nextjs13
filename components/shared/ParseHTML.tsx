@@ -34,7 +34,7 @@ const ParseHTML = ({ data }: Props) => {
   useEffect(() => {
     Prism.highlightAll();
   }, []);
-  return <div>{parse(data)}</div>;
+  return <div>{parse(data.replace(/\n/g, "<br />"))}</div>;
 };
 
 export default ParseHTML;
