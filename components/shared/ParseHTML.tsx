@@ -34,7 +34,11 @@ const ParseHTML = ({ data }: Props) => {
   useEffect(() => {
     Prism.highlightAll();
   }, []);
-  return <div>{parse(data.replace(/\n/g, "<br />"))}</div>;
+  return (
+    <div className="markdown w-full min-w-full">
+      {parse(data.replace(/\n/g, "<br />"))}
+    </div>
+  );
 };
 
 export default ParseHTML;
