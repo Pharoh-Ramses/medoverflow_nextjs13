@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "../styles/prism.css";
 import { ThemeProvider } from "@/context/ThemeProvider";
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,8 +44,8 @@ export default function RootLayout({
           }}
         >
           <ThemeProvider>{children}</ThemeProvider>
+          <Analytics />
         </ClerkProvider>
-        <Analytics />
       </body>
     </html>
   );

@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/prismjs": "^1.26.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
@@ -54,7 +55,6 @@
     "eslint-config-next": "14.1.0",
     "postcss": "^8",
     "tailwindcss": "^3",
-    "typescript": "^5",
-    "@types/prismjs": "^1.26.3"
+    "typescript": "^5"
   }
 }
