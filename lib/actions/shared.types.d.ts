@@ -50,7 +50,12 @@ export interface JobFilterParams {
   query: string;
   page: string;
 }
-
+export interface GetTimeSlotsParams {
+    service: string;
+    duration: string;
+    persons: string;
+    startDate?: string;
+}
 export interface GetQuestionsParams {
   page?: number;
   pageSize?: number;
